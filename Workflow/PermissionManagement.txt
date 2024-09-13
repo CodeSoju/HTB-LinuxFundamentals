@@ -1,0 +1,110 @@
+Permission Management:
+---------------------
+Under Linux, permissions are assigned to users and groups. Each user can be a member of different
+groups, and membership in these groups gives the user specific, additional permissions. 
+Each file and directory belongs to a specific user and a specific group. So the permissions for users and 
+groups that defined a file are also defined for te respective owners. When we create new files or dirs, they belong to the group we belong to and us. 
+
+When a user wants to access the contents of a Linux directory, they must traverse the dir, which means navigating to that directory, 
+requiring the user to have 'execute' permissions on the directory. Without this permission, 
+the user cannot access the directory's contents and will instead be presented with a "Permission Denied" error message. 
+
+It is important to note that execute permissions are necessary to traverse a directory, no matter the user's level of access. 
+Also, execute permissions on a directory do not allow a user to execute or modify any files or contents within the directory, only to traverse and access the content of 
+the directory. 
+
+To execute files within the directory, a user needs execute permissions on the corresponding file. To modify the contents of a 
+directory (create, delete, or rename files and subsdirs), the user needs 'write' permissions on the directory. 
+
+The whole permission system on Linux is based on the octal number system, and basically, there
+are 3 different types of permissions a file or a directory can be assigned:
+    - (r) - Read
+    - (w) - Write
+    - (x) - Execute 
+
+The permissions can be set for the owner, group, and others like presented in the next example with their corresponding permissions:
+    ls -l /etc/passwd
+
+    - rwx rw- r-- 1 root root 1641 May  4 23:42 /etc/passwd
+
+    - ==> File Type (- : File, d : Directory, l : Link)
+
+    rwx  ==> Permissions of the owner (read, write, execute)
+    rw- ==> Permissions of the group (read, write)
+    r--  ==> Permissions of others (read)
+    1 ==> Number of hard links 
+    root  ==> User
+    root ==> Group 
+    1641 ==> File Size
+    May 4 23:42 ==> Date
+
+Change Permissions:
+    We can modify permissions using the 'chmod' command, permission group references (u - owner, g - Group, o - others, a- All users), 
+    and either a [+] or a [-] to add remove the designated permissions. In the following example, let us assumes we have a file called shell and 
+    we want to change permissions for it so this script is owned by that user, becomes not executable, and set with read/write 
+    permissions for all users. 
+
+
+    ls - l shell
+        ==> -rwxr-x--x 1 cry0l1t3 htbteam 0 May 4 22:15 shell 
+    
+    We can then apply read permissions for all users and see the result:
+        chmod a+r shell && ls -l shell
+            ==> -rwxr-xr-x  1 cry0l1t3 htbteam 0 May..... shell
+    
+    We can also set the permissions for all other users to 'read' only using the octal value assignment
+        chmod 754 shell && ls -l shell
+            ==> -rwxr-xr--  1 cry0l1t3 htbteam 0 May ... shell
+    
+    Let us look at all the representaionts associated with it to understand better how the permission 
+    assingment is calculated. 
+
+    Binary Notation:             4 2 1 | 4 2 1 | 4 2 1
+    Binary Representation:       1 1 1 | 1 0 1 | 1 0 0 
+    Octal Value:                    7  |    5  |   4 
+    Permissions Representation:  r w x | r - x | r - - 
+
+    If we sum the set bits from the Binary Representation assigned to the value from Binary Notation together, we 
+    get the Octal Value. The Permissions Representation represents the bits set in the Binary Representation by using the three character, which only recognizes the set permission easier. 
+
+Change Owner:
+    To change the owner and/or group assignments of a file or dir, we can use the 'chown' command. The syntax is:
+        chown <user>:<group> <file/directory>
+    
+    In this example. "shell" can be replacec with any arbitrary file or folder
+        chown root:root shell & ls - l shell
+            ==> -rwxr-xr--  1 root root 0 May... shell
+
+SUID & SGID:
+    Besides assigning direct user and group permissions, we can also configure special permissions 
+    for files  by setting the Set User ID (SUID) and Set Group ID (SGID) bits. These SGID/SUID bits allow, for 
+    example, users to run programs with the rights of another user. Admins often use this to give their users special rights for certain applications or files. 
+    The letter 's' is used instead of an 'x'. When executing such a program, the SUID/SGID of the file owner is used/. 
+
+    It is often the case that admins are not familiar with the applications but still assign the SUID/SGID bits, which leads to a high-security risk. Such programs may contain functions that allow the execution of a shell from the pager, such as the application 
+    "journalctl". 
+    If the admin sets the SUID bit to "journalctl", any user with access to this application could execute a shell as 
+    root.
+
+STICKY BIT:
+-------------
+Sticky bits are a type of file permission in Linux that can be set on directories. This type of permission 
+provides an extra layer of security when controlling the deletion and renaming of files within a directory. It is typically used on dirs that are 
+shared by multiple users to prevent one user from accidentially deleting files that are important to others.
+
+Setting the sticky bit on a dir ensures that only the owner, the dir owner, or the root user can change the files 
+within the dir. 
+
+When a sticky bit is set on a dir, it is represented by the letter "t" in the execute permission of the dir's permissions. 
+For example, if a dir has permission "rwxrwxrwt", it means that the sticky bit is set, giving the extra level of 
+security so that no one other than the owner or root user can delete or rename the files or folders in the dir. 
+
+    ls - l 
+        drw-rw-r-t 3 cry0l1t3 cry0l1t3   ...  scripts
+        drw-rw-r-T 3 cry0l1t3 cry0l1t3   ...  reports
+    
+    In the above example, we see that both dirs have the sticky bit set. However, the reports folder has an uppercase T, and the scripts
+    folder has a lowercase t. 
+    If the sticky bit is capitalized (T), then this means that all other users do not have execute (x) permissions and , therefore, cannot see the contents of the folder nor run any programs from it. The 
+    lowercase sticky bit (t) is the sticky bit where the execute (x) permissions have been set. 
+    

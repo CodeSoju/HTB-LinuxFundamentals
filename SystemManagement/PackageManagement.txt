@@ -1,0 +1,106 @@
+PACKAGE MANAGEMENT:
+----------------
+Whether working as a system admin, maintaining our own Linux machines at home, or building/upgrading/maintaining our penetration testing distribution of choice, 
+it is crucial to have a firm grasp on the available Linux package managers and the various way to utilize them to install, update, 
+or remove packages. Packages are archives that contain binaries of software, config files, information about dependencies and 
+keep track of updates and upgrades. The features that most package management systems provide are:
+    -Package downloading
+    - Dependency resolution 
+    - A standard binary package format
+    - Common installation and configuration locations
+    - Additional system-related configuration and functionality
+    - Quality control 
+
+We can use many different package management systems that cover different types of files like 
+".deb", ".rpm" and others. The package management requirement is that the software to be installed
+is available as a corresponding package. Typically this is created, offered, and maintained centrally underLinux distributions. 
+In this way, the software is intergrate directly into the system, and it various dirs are distributed throughout the system. 
+The package management software retrieves the necessary changes for system installation from the package itself and then 
+implements these changes to install the package successfully. If the package management software recognizes that additional packages are required for the proper 
+functioning of the package that has not yet been installed, a dependency is included 
+and either warns the admin or tries to reload the missing software from a repo, for example, and 
+install it in advance. 
+
+If an installed software has been deleted, the package management system then retakes the package's information , 
+modified it based on its configuration, and deletes files. There are differnt package management programs that we can use for this. 
+
+    dpkg:  The dpkg is a tool to install, build remove, and manage Debian packages. The primary and more user-friendly front-end for 
+            dpkg is aptitude
+    
+    apt:   Apt provides a high-level command line interface for the package management system. 
+
+    aptitude:  Aptitude is an alternative to apt and is a high-level interface to the package manager
+
+    snap:   Install, configure, refresh, and remove snap packages. Snaps enable the secure distribution 
+    of the latest apps and utilities for the cloud, servers, desktops, and the IoT. 
+
+    gem:   Gem is the front-end to RubyGems, the standard package manager for Ruby 
+
+    pip:   Pip is a Python package installer recommended for installing Python packages that are not available in the Debian archive. It 
+            can work with version control repos (currently only Git, Mercurial, and Bazaar repos), logs output extensively, and prevents partial installs 
+            by downloading all requirements before starting installation
+    
+    git:   Git is a fast and scalable, distributed revision control system  with an unusally rich command set 
+            that provides both high-level ops and full access to internals
+
+
+ADVANCED PACKAGE MANAGER (APT):
+----------------------------------
+dEBIAN-BASED lINUX distros use the APT package manager. A package is an archive file containing multiple ".deb" files. The dpkg utility is used to install 
+programs from the associated ".deb" file. APT makes updating and installing programs easier because many programs have dependencies. When installing a program from a standalone
+".deb" file, we may run into dependency issues and need to download and install one or multiple additional packages. APT makes this easier and more efficient by packaging 
+together all of the dependencies needed to install a program. 
+
+Each Linux distro uses software repos that are updated often. When we update a program or intall a new one, the system queries these repos for the desired package. Repos can be labeled 
+as stable, testing or unstable. Most Linux distros utilize the most stable or "main" repo. This can be checked by viewing the contents of the /etc/apt/sources.list file. The repo list for Parrot OS is at 
+/etc/apt/sources.list.d/parrot.list
+
+APT uses a database called the APT cache. This is used to provide information about packages installed on our system offline. We can search the APT cache, for example, to find all Impacket related packages. 
+
+    apt-cache search Impacket
+        ==> impacket-scripts - Links to useful scripts examples
+            polenum - Extracts the password policy from a Windows system 
+            python-pcapy - Python interface to the libpcap packet capture library (Python 2)
+            python3-impacket - Python3 module to easily build and dissect network protocols
+    
+
+We can then view additional information about a package:
+
+    apt-cache show impacket-scripts
+        ==> Package: impacket-scripts
+            Version: 1.4
+            Architecture: all
+            <SNIP>
+
+We can also list all installed packages:
+
+        apt list --installed
+            ==> Listing... Done
+                accountsservice/rolling,now 0.6.55-2 amd64 [installed, automatic]
+                adapta-gtk-theme/rolling,now 3.95.11-1 all [installed]
+                adduser/rolling,now 3.118 all [installed]
+                <SNIP>
+
+If we are missing some packages, we can search for it and install it using the following command:
+
+        sudo apt install impacket-script -y 
+
+Git:
+Now that we have git installed, we can use it to download useful tools from Github. One such project is called 'Nishang'. 
+Before we download the project and its scripts and lists, we should create a particular folder:
+    
+    mkdir ~/nishang/ && git clone https://github.com/samratashok/nishang.git ~/nishang
+
+        ==> Cloning into 'opt/nishang/'...
+        remote: Enumarting objects: 15, done
+
+
+DPKG:
+We can also download the programs and tools from the repos separately. In this exampe, we download 'strace' for 
+Ubuntu 18.04 LTS
+
+    wget http://archive.ubuntu.com/ubuntu/pool/main/s/strace/strace_4.21-1ubuntu1_amd64.deb
+
+Furthermore, now we can use both apt and dpkg to install the package. Since we have already worked with apt, we will turn to dpkg in the next example. 
+
+    sudo dpkg -i strace_4.21-ubuntu1_amd64.deb

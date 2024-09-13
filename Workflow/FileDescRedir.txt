@@ -1,0 +1,83 @@
+FILE DESCRIPTORS AND REDIRECTIONs:
+
+
+File Descriptors:
+    a file desciptor (FP) in Unix/Linux OSs is an indicator of connection maintained by the kernel
+    to perform I/O ops. In Windows-based OSs, it is called filehandle. 
+    it is the connection (generally to a file) from the Operating system to perfomr I/O ops (Input/Output of Bytes). By default, the first 3 files descriptors in linux are:
+
+    1. Data Streams for Input
+        - STDIIN - 0
+    
+    2. Data Stream for Output  
+        - STDOUT - 1
+    
+    3. Data Stream for Output that relates to an error occurring:
+        - STDERR - 2
+    
+
+    STDIN and STDOUT:
+        let's take 'cat' command as example. When running 'cat', we give the running program our
+        standard input (STDIN - FD 0) is. As soon as we have confirmed our input with [ENTER], it is returned
+        to the terminal as standard output (STDOUT - FD 1)
+    
+    STDOUT and STDERR:
+        by using 'find' command, we will see the standard output (STDOUT - FD 1) 
+
+        We can check this by redirecting the file descriptor for the errors
+        (FD 2 - STDERR) to "/dev/null". This way, we redirect the resulting errors to the "null device", 
+        which discards all data. 
+
+        i.e/: find /etc/ -name shadow 2>/dev/null
+
+    Redirect STDOUT to a file:
+        Now we can see that all errors (STDERR) previously presented with "Permission denied" are no longer displayed. 
+        The only result we see now is the standard output (STDOUT), whichwe can also redirect to a file with the name results.txt
+        that will only contain standard output w/o the stanard errors
+
+                file /etc/ -name shadow 2>/dev/null >  results.txt
+
+
+    Redirect STDOUT and STDERR to Separate files:
+        We will redirect standard error (FD 2 - STDERR) and standard output (FD 1 - STDOUT) to different files
+
+            find /etc/ - name shadow 2> stderr.txt 1> stdout.txt
+
+    Redirect STDIN:
+        in combinatino with the file directors, we can redirect errors and output with greater-than character (>). 
+        this also works with the lower-than sign (<). however, the lower-than sign serves as standard input (FD 0 - STDIN). These chars can be seen as "direction"
+        in the form of an arrow that tells us "from where" and "where to" the data should be redirected. We use the 'cat' command to use the contents of the file
+        "stdout.txt" as STDIN
+
+            cat < stdout.txt
+    
+    Redirect STDOUT and Append to a File:
+        When we use the greater-than sign (>) to redirect our STDOUT, a new file is automatically created if it does not already
+        exist. If this file exists, it will be overwritten w/o asking for confirmation. If we want to append STDOUT to our exisiting file, we can use the double greater-than sign (>>)
+
+        i.e:
+            find /etc/ -name passwd >> stdout.txt 2>/dev/null
+
+
+    Redirect STDIN Stream to a File:
+        we can also use the double lower-than chars (<<) to add our standard input through a stream. We can use the 
+        called End-Of-File (EOF) function of a Linux system file, which defines the input's end. 
+
+        i.e:
+        cat << EOF > stream.txt
+    
+
+    Pipes:
+        Another way to redirect STDOUT is to use pipes(|) These are useful when we wan to use the STDOUT from one program
+        to be processed by another. One of the most commonly used tools is 'grep'. 
+        Grep is used to filter STDOUT according to the pattern we define. 
+        
+        find /etc/ -name *.conf 2>/dev/null | grep systemd
+
+            The grep command above will filter out the results and specify that only the lines containing the pattern "systemd" should 
+            be displayed. 
+
+    The redirections work, not only once. WE can use the obtained results to redirect them to another 
+    program,. For the next example, we will use the tool called 'wc', which should count the total number of obtained results. 
+
+        find /etc/ -name *.conf 2>/dev/null | grep systemd | wc -l

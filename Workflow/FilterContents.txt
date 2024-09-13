@@ -1,0 +1,145 @@
+Filter Contents:
+    commands 'more' and 'less' which are very identical. These are fundamental pagers 
+    that allow us to scroll through the file in an interactive view. 
+
+    i.e.:
+        more /etc/passwd
+    
+    'more' will allow us to automatically start at the beginning of the file
+
+    [Q] key will allow us to exit the pagers
+
+Less: 
+    less /etc/passwd
+
+    only difference is that when leaving the pager [Q], the output will not remain in the 
+    terminal
+
+Head: 
+    If we only want to get the first lines of the file, we can use the tool 'head'. By deafult, 'head' prints the first ten lines 
+    of the given file or input, if not specified otherwise. 
+
+        head /etc/passwd 
+
+Tail:
+    last parts of a file or results: tail => returns the last 10 lines 
+
+        tail /etc/passwd
+
+Sort:
+    cat /etc/passwd | sort 
+
+    will sort the results alphabetically or numerically
+
+Grep:
+    we will only search for specific results that contain patterns we have defined. One of the most used tools for this is 'grep', which 
+    offers many different features. Accordingly, we can search for users who have the default shell 
+
+        cat /etc/passwd | grep "/bin/bash"
+    
+    Another possiblility is to exclude specific results. For this, the option '-v' is used with grep. 
+    in the next example, we exclude all users who have disbales the standard shell with the name "/bin/false" or "/usr/bin/nologin"
+
+        cat /etc/passwd | grep -v "false\|nologin"
+
+Cut:
+    specific results with different chars may be separated as delimiters. Here it is handy to know how to remove 
+    specific delimiters and show the words on a line in a specified position. We can use 'cut' command. Therefore 
+    we use the option "-d" and set the delimiter to the colon character (:) and define with the option "-f" the position in the line we wand to output
+
+    cat /etc/passwd | grep -v "false\|nologin" | cut -d":" -f1
+
+Tr:
+    another possibility to replace certain chars from a line with chars defined by us in the tool 'tr'. As the first option, we define which char we want to replace, 
+    and as a second option, we define the char we want to replace it with.
+
+        cat /etc/passwd | grep -v "false\|nologin" | tr ":" " "
+
+        this replaces the colon char with a space
+
+Column:
+    the tool 'column' displays the results in tabular from using the "-t"
+
+    cat /etc/passwd | grep - v "false\|nologin" | tr ":" " " | column -t 
+
+
+Awk:
+    (g)awk programming is beneficial, which allows us to display the first $1 and the last ($NF) result of the line. 
+
+        cat /etc/passwd | grep -v "false\|nologin" | tr ":" " " | awk '{print $1 $NF}'
+
+        root /bin/bash
+        sync  /bin/sync
+        mrb3n  /bin/bash
+        cry0l1t3  /bin/bash
+        ntb-stduent  /bin/bash
+
+Sed:
+    there will be come moments when we want to change specific names in the whole file or standard input. 
+    One of the tools we can use for this is the stream editor called 'sed'. One of the most common uses of this 
+    is substituting text. Here, sed looks for patterns we have defined in the form of regex (regular expressions) and replaces them with another 
+    pattern that we have also defined. Let us stick to the last results and say we want to replace the word "bin" with "HTB"
+
+    The "s" flag at the beginning stands for the substitute command. Then we specify the pattern we want too replace. After the slash (/), we enter the pattern
+    we want to use as a replacment in the 3rd position. Finally, we use the "g" flag, which stands 
+    for replacing all matches
+
+        cat /etc/passwd |grep -v "false\|nologin" | tr ":" " " | awk '{print $1, $NF}' | sed 's/bin/HTB/g
+
+            root /HTB/bash
+            sync /HTB/sync
+
+Wc:
+To avoid counting the lines or chars manually, we can use the tool 'wc'. With the '-l' option, 
+we specifiy that only the lines are counted
+
+        cat /etc/passwd |grep -v "false\|nologin" | tr ":" " " | awk '{print $1, $NF}' | wc -l
+
+            output : 5
+
+How many services are listening on the target system on all interfaces?
+    use the 'netstat' command with the '-t' (short version of --tcp) flag, the 
+    '-u' (short version of --udp) flag, the '-l' (short version of --listening) flag to list 
+    listening sockets, and the '-n' flag ( short verion of --numeric) to show numerical addresses instead of trying to determine 
+    symbolic hosts, ports or user names:
+
+        netstat -tuln | grep 'LISTEN'
+    
+    Now we have to exclude (filter out) using 'grep' any socket that is listening on localhost (i.e. 127.0.0.*)
+    or uses IPv6, and then use the wc command with the -l flag to print the number of desired interfaces 
+
+        netstat -tuln | grep 'LISTEN' | grep -v "127.0.0\|tcp6" | wc -l
+    
+
+Determine what user the ProFTPd server is running under. Submit the username as the answer. 
+
+    Using the same SSH connection established from the previous Q, students need to use find command on the root directory '/'
+    and use the '-name' flag specificying for it 'proftpd.conf', since users anad related information can be found in configuration files:
+
+        find / -name 'proftpd.conf' 2>/dev/null
+    
+    we now have to use the -execute flag to find specifying for it the cat command 
+        find / -name 'proftpd.conf' -exec cat {} \; 2>/dev/null
+    
+
+    Since only the user is asked for, students need to user 'grep' to filter out the lines with 'user'
+    and then at least use 'grep' again to remove all commented lines (ones starting with #), to find the username 'proftpd':
+        find / -name 'proftpd.conf' -exec cat {} \; 2>/dev/null | grep -i 'user' | grep -v '#' |
+
+
+Use cURL from your Pwnbox (not the target machine) to iobtain the source code of the website and filter all 
+unique paths of that domain. Submit the number of these paths as the answer
+
+    students first need to fetch the source code of website using curl along with the -k flag to allow insecure connections
+    (ignore SSL/TLS warnings) and the -s flag to operate in silent mode:
+        curl [website] -k -s
+
+since the src attribute of the script tag wraps around the URLs single apostrphes, student need to use 'tr'  to replace them with the newline char:
+    curl [website] -k -s | tr "'" "\n"
+
+students will alos notice from output that the href attribute of the link tag wraps 
+around URLs double quotes, thus, they need to pipe out the output once more to tr to replace them with the newline char:
+    curl [website] -k -s | tr "'" "\n" | tr '"' "\n"
+
+Now, students need to run the same command and pipe its output for 'grep' to filter out the paths of the domain 'inlanefreight'
+    curl [website] -k -s | tr "'" "\n" | tr '"' "\n" | grep 'inlanefreight" | sort -u | wc -l

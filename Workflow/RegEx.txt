@@ -1,0 +1,57 @@
+Regular Expressions (RegEx):
+-----------------------------------------------
+an art of expression language to search for patterns in text and files. They can be used to find and replace text, analyze data, validate input, perform searches, and more. In simple terms, they are a filter criterion that can be used to analyze and manipulate strings. 
+
+A RegEx is a sequence of letters and symbols that form a search pattern. In addition, regular expressions can be created with patterns called 
+metacharacters. These are symbols that define the search pattern but have no literal meaning. 
+
+
+Grouping:
+---------
+regex offers us the possibility to group the desired search patterns. Basically, regex follows three different concepts, which are distinguised by the 
+3 different brackets:
+
+Grouping Operators:
+    (a)     The round brackets are used to group parts of a regex. Within brackets, you can define further patterns 
+            which should be processed together. 
+
+    [a-z]   The square brackets are used to define character classes. Inside the brackets, you can specify a list of chars to search for
+
+    {1, 10}  The curly brackets are used to define quantifiers. Inside the brackets, you can specify a number or a range that indicates 
+             how often a previous pattern should be repeated. 
+    
+       |     Also called the OR operator and shows results when one of the two expressions matches 
+
+     .*      Also called the AND operator and siplayed results only if both expressions match. 
+
+OR operator:
+    grep - E "(my|false)" /etc/passwd
+
+    -E extended regex
+
+Since one of the two search parameters always occurs in the three lines, all three lines are 
+displayed accordingly. 
+
+
+AND operator:
+    grep -E "(my.*false)" /etc/passwd
+
+    we are looking for a line where we want to see both "my" and "false". 
+    A simplified example would also be to use grep twice:
+        grep -E "my" /etc/passwd | grep - E "false"
+
+Show all lines that do not contain the # char:
+    grep -v "[#]" [filename]
+
+Search for all lines that contain a word that starts with "Permit":
+    grep -E "(Permit)" [filename]
+            ".*Authentication" [filename]
+
+Search for all lines containing the word "Key":
+    grep -E "(Key)" [filename]
+
+Search for all lines beginning with Password and containing yes:
+    grep -E "Password.*(yes)" [filename]
+
+Search for all lines that end with yes:
+    grep -E ".*yes"

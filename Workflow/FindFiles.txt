@@ -1,0 +1,57 @@
+Find:
+    besides the function to find the files and folders, this tool also contains the function
+    to filter the results. We can use filter parameters like the size of the file or the date. '
+    We can alos specify if we only search for files or folders. 
+
+Syntax:
+    find <location> <options>
+
+Ex:
+    find / -type f -name *.conf -user root -size +20k -newermt 2020-03-03 -exec ls -al {} \; 2>/dev/null
+
+Let's go over the options above:
+
+-type f   ==> we define the type of the searched object. 'f' stands for 'file'
+
+-name *.conf   ==> with '-name', we indicate the name of the file we ar looking for.
+                    '*' stands for 'all files' with the '.conf' extension
+
+-user root   ==> this option filters all files whose owner is the root owner
+
+-size +20k  ==> we can the filter all the located files and specify that we only want to see the files that are largers
+                than 20KiB
+
+-newermt 2020-03-03   ==>   with this option, we set the date. Only files newer than the specified date will be presented
+
+-exec ls -al {} \;   ==> This option executes the specified command, using curly brackets as placeholders for each result. The backlash escapes
+                        the next chapter from being interpreted by the shell because otherwise, the semicolon would
+                        terminate the command and not reach the redirection
+
+2>/dev/null   ==> This is a STDERR redirection to the 'null device'. This redirection ensres that no errors are displayed in the terminal. This redirection must not be an option of the 'find' command.
+
+
+
+LOCATE:
+    it will take much time to search through the whole system for our files and directions to perform many different
+    searches. The command locate offers us a quicker way to search through the system. 
+    In contrast to the 'find' command, 'locate' works with a local database that contains all information about existing files and folders. We can update this 
+    database with the following command:
+
+        sudo updatedb
+    
+    If we now search for all files with the '*.conf' extension, you will find that this search produces results much faster than using 'find'
+
+    locate *.conf
+
+    output:
+        /etc/GeoIP.conf
+        /etc/NetworkManager/NetworkManager.conf
+        /etc/UPower/UPower.conf
+        ....
+    
+The downside of thie tool is that it doesn't have as many filter options that we can use. 
+
+Try the different utilities and find everytin related to the netcat /nc tool
+
+
+ssh [username]@[host_ip_address]
