@@ -76,3 +76,55 @@ For example, if a program were to freeze, we could force it with the following c
         kill 9 <PID>
 
 
+BACKGROUND A PROCESS:
+---------------------
+SOmetimes it will be necessary to put the scan or process we just started in the background to continue using the current session to 
+interact with the system or start other processes. As we have already seen, we can do this with the shortcut [Ctrl + Z]. 
+As mentioned above, we send the SIGTSTP signal to the kernel, which suspends the process. 
+
+    ping -c 10 www.hackthebox.eu 
+    
+    vim tmpfile
+        ==> [Ctrl + Z]
+            [2]+ Stopped        vim tmpfile
+
+
+Now all background processes can be displayed with the following command
+
+    jobs
+        ==> [1]+ Stopped    ping -c 10 www.hackthebox.eu
+            [2]+ Stopped    vim tmpfile
+
+The [Ctrl] + Z shortcut suspends the processes, and they will not be executed further. To keep it running in the background, 
+we have to enter the command 'bg' to put the process in the background. 
+
+    bg [job_spec ...]
+        ==> --- www.hackthebox.eu ping stats ----
+            10 packets transmitted, 0 received, 100% packet loss, time 113482 ms 
+
+            [ENTER]
+            [1]+ Exit 1     ping -c 10 www.hackthebox.eu 
+
+Another option is to automatically set the process with an AND sign (&) at the end of the command. 
+
+    ping -c 10 www.hackthebox.eu &
+        ==> [1] 10825
+            PING www.hackthebox.eu (172.67.1.1) 56(84) bytes of data
+
+Once the process finishes, we will see the results. 
+    =-> --- www.hackthebox.eu ping stats ----
+            10 packets transmitted, 0 received, 100% packet loss, time 113482 ms 
+
+            [ENTER]
+            [1]+ Exit 1     ping -c 10 www.hackthebox.eu 
+
+
+FOREGROUND A PROCESS:
+--------------------
+After that, we can use the 'jobs' command to list all background processes. Backgrounded processes do not require user interaction, and we can use the same shell session without waiting
+until the process finishes first. Once the scan or processes finishes its work, we will get notified by the terminal that the process is finished. 
+
+    jobs
+        ==> [1]+ Running      ping - c 10 www.hackthebox.eu &
+
+If we want to get the background process into the foreground and interact with it again
