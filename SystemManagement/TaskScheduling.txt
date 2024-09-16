@@ -1,0 +1,86 @@
+TASK SCHEDULING:
+-----------------
+Task sceduling is a feature in Linux systems that allows users to schedule and automate tasks. It allows admins and users to run tasks at a specific 
+time or within specific frequencies without having to start them manually. It can be used in Linux systems such as Ubuntu, Redha Linux, and Solaris to manage 
+a variety of tasks. Examples include automatically updating software, running script, cleaning DBs, and automating backups. This allows users  to schedule 
+regular and repetitive tasks to ensure they are run regularly. In addition, alerts can be set up to display when certain events occur or to contact admins 
+or users. There are many different use cases for automation of this type, but these cover most cases. 
+
+
+Systemd:
+-==-=-=-
+Systemd is a service used in Linux systems such as U, RH, and Solaris to start processes and scripts at a specifictime. With it, we can set up processes and scripts to run at a specific time 
+or time interval and can also specify specific events and triggers that will trigger a specific task. To do this, we need to take some steps and precautions before out scripts or processes are automatically executed by the system. 
+
+1. Create a timer
+2. Create a service 
+3. Activate the timer 
+
+Create a Timer:
+---------------
+To create a timer for systemd, we need to create a directory where the timer script will be stored. 
+
+    sudo mkdir /etc/systemd/system/mytimer.timer.d 
+    sudo vim /etc/systemd/system/mytimer.timer 
+
+Next, we need to create a script that configures the timer. The script must contain the following options: "Unit", "Timer" and "Install". The "Unit" 
+option specifies a description for the timer. The "Timer" options specifies when to start the timer and when to activate it. Finally, the "Install" option specifies where to install the timer. 
+
+Mytimer.timer
+--------------
+[Unit]
+Description=My Timer
+
+[Timer]
+OnBootSec=3min
+OnUnitActivateSec=1hour
+
+[Install]
+WantedBy=timers.target
+
+
+Here it depends on how we want to use our script. For example, if we want to run our script once after the system boot, we should use OnBootSec setting in Timer. However, if we want our script to run regularly, 
+then we should use the OnUnitActivateSec to have the system run the script at regular interval. Next, we need to create our service. 
+
+
+Create A Service:
+----------
+    sudo vim /etc/systemd.system/mytimer.service
+
+Here we set a description and specify the full path to the script we want to run. The 'multi-user.target' is the unit sysem that is activated when starting a 
+normal multi-user mode. It defines the services that should be started on a normal system startup. 
+
+Mytimer.service:
+-----------------
+[Unit]
+Description=My Service
+
+[Service]
+ExecStart=/full/path/to/my/script.sh
+
+[Install]
+WantedBy=multi-user.target
+
+
+After that, we have to let systemd read the folders again to include the changes
+
+
+Reload Systemd:
+--------------
+    sudo systemctl daemon-reload 
+
+
+After that, we can use systemctl to start the service manually and enable the autostart. 
+
+
+Start the Timer & Service:
+-----------------------
+    sudo systemctl start mytimer.service
+    sudo systemctl enable mytimer.service 
+
+
+
+Cron:
+----
+Cron is another tool that can be used in Linux systems to schedule and automate processes. It allows users and admins to execute tasks at a specfic time or 
+within specific intervals
